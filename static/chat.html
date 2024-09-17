@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Chat</h1>
+    <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Input">
+        <button type="submit">Send</button>
+    </form>
+    <div id="chat-display"></div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatDisplay = document.getElementById('chat-display');
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = userInput.value;
+            userInput.value = '';
+
+            chatDisplay.innerHTML = '';
+            chatDisplay.innerHTML += `<p><strong>Input:</strong> ${question}</p>`;
+
+            const response = await fetch('/chat_script', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_input: question }),
+            });
+
+            const data = await response.json();
+
+            chatDisplay.innerHTML += `<p><strong>Output:</strong> ${data.answer}</p>`;
+            chatDisplay.innerHTML += `<p><small>Sources: ${data.sources.join(', ')}</small></p>`;
+        });
+    </script>
+</body>
+</html>
