@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.ragapplication.mapper.FileMapper">
+    <select id="selectFilesById" resultType="com.example.ragapplication.pojo.FileData">
+        SELECT id AS id, filename AS filename, upload_time AS uploadTime
+        FROM file
+        WHERE db_id = #{id}
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countFilesById" resultType="int">
+        SELECT COUNT(*)
+        FROM file
+        WHERE id = #{id}
+    </select>
+</mapper>
