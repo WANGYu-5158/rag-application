@@ -22,4 +22,14 @@ public class KdbServiceImpl implements KdbService {
     public List<Knowledgedb> kdbList() {
         return knowledgedbMapper.queryAll();
     }
+
+    @Override
+    public List<Knowledgedb> queryByName(String dbname) {
+        return knowledgedbMapper.queryByName(dbname);
+    }
+
+    @Override
+    public int addDb(String dbname) {
+        return knowledgedbMapper.addDb(dbname);
+    }
 }

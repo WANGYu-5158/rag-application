@@ -11,4 +11,8 @@ import java.util.List;
 public interface KdbService {
 
     List<Knowledgedb> kdbList();
+
+    List<Knowledgedb> queryByName(String name);
+
+    int addDb(String dbname);
 }

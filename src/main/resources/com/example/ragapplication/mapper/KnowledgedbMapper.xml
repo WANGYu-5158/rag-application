@@ -7,4 +7,14 @@
     <select id="queryAll" resultType="com.example.ragapplication.pojo.Knowledgedb">
         SELECT * FROM knowledgedb;
     </select>
+
+    <select id="queryByName" resultType="com.example.ragapplication.pojo.Knowledgedb">
+        SELECT * FROM knowledgedb
+        WHERE name LIKE CONCAT('%', #{dbname}, '%');
+    </select>
+
+    <insert id="addDb">
+        INSERT INTO knowledgedb (name, create_time, update_time, file_num)
+        VALUES (#{dbname}, NOW(), NOW(), 0);
+    </insert>
 </mapper>

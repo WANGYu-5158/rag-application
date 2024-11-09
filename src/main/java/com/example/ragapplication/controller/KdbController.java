@@ -4,9 +4,7 @@ import com.example.ragapplication.pojo.Knowledgedb;
 import com.example.ragapplication.service.KdbService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,5 +23,15 @@ public class KdbController {
     @GetMapping("/list")
     public List<Knowledgedb> queryAll(){
         return kdbService.kdbList();
+    }
+
+    @GetMapping("/search")
+    public List<Knowledgedb> queryByName(@RequestParam("dbname") String dbname){
+        return kdbService.queryByName(dbname);
+    }
+
+    @PostMapping("/add")
+    public int addDb(@RequestParam("dbname") String dbname){
+        return kdbService.addDb(dbname);
     }
 }

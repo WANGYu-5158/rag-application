@@ -17,4 +17,18 @@ public interface KnowledgedbMapper {
      * @return
      */
     List<Knowledgedb> queryAll();
+
+    /**
+     * 根据数据库名模糊查询数据库信息
+     * @param dbname
+     * @return
+     */
+    List<Knowledgedb> queryByName(String dbname);
+
+    /**
+     * 新增数据库信息
+     * @param dbname
+     * @return
+     */
+    int addDb(String dbname);
 }
