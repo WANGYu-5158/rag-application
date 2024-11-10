@@ -27,14 +27,19 @@ llm = AzureOpenAI(
 MODEL_NAME=os.getenv("AZURE_MODEL_NAME")
 TEMPERATURE=0.0
 
-EMBED_MODEL="models/dunzhang/stella_en_1.5B_v5"
+EMBED_MODEL="dunzhang/stella_en_1.5B_v5"
 CHUNK_SIZE=3072
 CHUNK_OVERLAP=int(0.2 * CHUNK_SIZE)
 SIMILARITY_TOP_K=6
 DISTANCE_METRIC="cosine"
 
+class UploadRequest(BaseModel):
+    files: List[UploadFile] = File(...)
+    file_id: str
+    db_id: str
+
 @app.post("/upload")
-async def upload_files(files: List[UploadFile] = File(...)):
+async def upload_files(request: UploadRequest):
     db = chromadb.PersistentClient(path="./chroma_db")
 
     collection_params = {
@@ -48,7 +53,11 @@ async def upload_files(files: List[UploadFile] = File(...)):
     try:
         chroma_collection = db.get_collection(**collection_params)
     except Exception:
-        collection_params["metadata"] = {"hnsw:space": DISTANCE_METRIC}
+        collection_params["metadata"] = {
+            "hnsw:space": DISTANCE_METRIC,
+            "file_id": request.file_id,
+            "db_id": request.db_id
+            }
         chroma_collection = db.create_collection(**collection_params)
     
     sentence_splitter = SentenceSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
@@ -57,7 +66,7 @@ async def upload_files(files: List[UploadFile] = File(...)):
     metadatas = []
     ids = []
 
-    for uploaded_file in files:
+    for uploaded_file in request.files:
         file_content = await uploaded_file.read()
         file_extension = uploaded_file.filename.split('.')[-1].lower()
         
