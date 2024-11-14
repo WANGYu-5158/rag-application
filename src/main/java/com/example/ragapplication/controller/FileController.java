@@ -5,10 +5,8 @@ import com.example.ragapplication.pojo.Page;
 import com.example.ragapplication.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author wangyu
@@ -29,6 +27,20 @@ public class FileController {
 
         Page<FileData> filePage = fileService.getFilesById(id, page, size);
         return ResponseEntity.ok(filePage);
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
+                                             @RequestParam("dbId") int dbId) {
+        ResponseEntity<String> response = fileService.handleFileUpload(file, dbId);
+        return response;
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteFile(@RequestParam("dbId") int dbId,
+                                             @RequestParam("fileId") int fileId) {
+        ResponseEntity<String> response = fileService.deleteFile(dbId, fileId);
+        return response;
     }
 }
 

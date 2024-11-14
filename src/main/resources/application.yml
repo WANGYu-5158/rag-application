@@ -10,6 +10,10 @@ server:
     context-path: /ragApplications
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   #MySQL???
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource

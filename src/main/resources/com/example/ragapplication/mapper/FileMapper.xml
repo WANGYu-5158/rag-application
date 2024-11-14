@@ -16,4 +16,12 @@
         FROM file
         WHERE id = #{id}
     </select>
+
+    <insert id="insertFile" parameterType="com.example.ragapplication.pojo.FileData" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO file (filename, upload_time, db_id) VALUES (#{filename}, NOW(), #{dbId})
+    </insert>
+
+    <delete id="deleteFileById" parameterType="int">
+        DELETE FROM file WHERE id = #{fileId}
+    </delete>
 </mapper>
