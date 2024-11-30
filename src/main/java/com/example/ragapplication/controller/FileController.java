@@ -37,7 +37,7 @@ public class FileController {
     }
 
     @PostMapping("/delete")
-    public ResponseEntity<String> deleteFile(@RequestParam("dbId") int dbId,
+    public ResponseEntity<String> deleteFile(@RequestParam int dbId,
                                              @RequestParam("fileId") int fileId) {
         ResponseEntity<String> response = fileService.deleteFile(dbId, fileId);
         return response;

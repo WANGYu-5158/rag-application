@@ -20,13 +20,13 @@
 
     <update id="addDbFileNum" parameterType="int">
         UPDATE knowledgedb
-        SET file_num = file_num+1
+        SET file_num = file_num+1, update_time = NOW()
         WHERE id = #{dbid};
     </update>
 
     <update id="reduceDbFileNum" parameterType="int">
         UPDATE knowledgedb
-        SET file_num = file_num-1
+        SET file_num = file_num-1, update_time = NOW()
         WHERE id = #{dbid};
     </update>
 </mapper>

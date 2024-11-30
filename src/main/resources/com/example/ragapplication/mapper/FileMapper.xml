@@ -14,7 +14,7 @@
     <select id="countFilesById" resultType="int">
         SELECT COUNT(*)
         FROM file
-        WHERE id = #{id}
+        WHERE db_id = #{id}
     </select>
 
     <insert id="insertFile" parameterType="com.example.ragapplication.pojo.FileData" useGeneratedKeys="true" keyProperty="id">

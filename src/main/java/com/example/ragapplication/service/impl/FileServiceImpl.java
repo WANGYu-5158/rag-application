@@ -39,7 +39,7 @@ public class FileServiceImpl implements FileService {
         int totalElements = fileMapper.countFilesById(id);
         int totalPages = (int) Math.ceil((double) totalElements / size);
 
-        return new Page<>(files, totalElements, totalPages, page);
+        return new Page<>(files, totalElements, totalPages, page+1);
     }
 
     @Override
@@ -47,19 +47,19 @@ public class FileServiceImpl implements FileService {
         try {
             FileData fileData = new FileData();
             String fileName = file.getOriginalFilename();
-            byte[] fileContent = file.getBytes(); // 文件内容以字节数组形式获取
+            //byte[] fileContent = file.getBytes(); // 文件内容以字节数组形式获取
             fileData.setFilename(fileName);
             fileData.setDbId(dbId);
             //在file数据库中增加文件记录，并在fileData获取id
             fileMapper.insertFile(fileData);
-            //更新file数据表之后在knowledgedb数据库中增加文件数量
+            //更新file数据表之后在knowledgedb数据库中增加文件数量，并更新数据库的更新时间
             knowledgedbMapper.addDbFileNum(dbId);
             //验证是否获取到了文件的id
             //System.out.println("Received file: " + fileName + " with ID: " + fileData.getId());
 
             // 创建 RestTemplate 实例
             RestTemplate restTemplate = new RestTemplate();
-            String targetUrl = "http://0.0.0.0:8000/upload"; // 后续替换为 RAG 系统的实际 URL
+            String targetUrl = "http://localhost:8000/upload"; // 后续替换为 RAG 系统的实际 URL
 
             // 构建请求体
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -85,10 +85,10 @@ public class FileServiceImpl implements FileService {
             ResponseEntity<String> response = restTemplate.postForEntity(targetUrl, requestEntity, String.class);
 
         } catch (IOException e) {
-            return ResponseEntity.status(500).body("文件处理失败：" + e.getMessage());
+            return ResponseEntity.status(500).body("Failed to process the file：" + e.getMessage());
         }
 
-        return ResponseEntity.ok("文件上传成功！");
+        return ResponseEntity.ok("File uploaded successfully");
     }
 
     @Override
@@ -96,12 +96,12 @@ public class FileServiceImpl implements FileService {
         try {
             // 调用 Mapper 方法删除文件
             fileMapper.deleteFileById(fileId);
-            // 更新knowledgedb数据库中的file_num信息
+            // 更新knowledgedb数据库中的file_num信息，并更新数据库的更新时间
             knowledgedbMapper.reduceDbFileNum(dbId);
-            return ResponseEntity.ok("文件删除成功！");
+            return ResponseEntity.ok("File deleted successfully！");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("文件删除失败：" + e.getMessage());
+            return ResponseEntity.status(500).body("File deletion failed：" + e.getMessage());
         }
     }
 }

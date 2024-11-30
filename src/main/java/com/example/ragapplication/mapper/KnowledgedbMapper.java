@@ -33,14 +33,14 @@ public interface KnowledgedbMapper {
     int addDb(String dbname);
 
     /**
-     * 更新数据库文件数量信息
+     * 更新数据库文件数量信息并更新知识库更新时间
      * @param dbId
      * @return
      */
     int addDbFileNum(int dbId);
 
     /**
-     * 减少数据库中文件数量信息
+     * 减少数据库中文件数量信息并更新知识库更新时间
      * @param dbId
      * @return
      */
