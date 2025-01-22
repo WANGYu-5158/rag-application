@@ -1,6 +1,7 @@
 package com.example.ragapplication.service;
 
 import com.example.ragapplication.pojo.Knowledgedb;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -14,5 +15,7 @@ public interface KdbService {
 
     List<Knowledgedb> queryByName(String name);
 
-    int addDb(String dbname);
+    ResponseEntity<String> addDb(String dbname);
+
+    ResponseEntity<String> deleteDb(int dbId);
 }
