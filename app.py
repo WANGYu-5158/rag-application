@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import JSONResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
@@ -33,13 +33,18 @@ CHUNK_OVERLAP=int(0.2 * CHUNK_SIZE)
 SIMILARITY_TOP_K=6
 DISTANCE_METRIC="cosine"
 
-class UploadRequest(BaseModel):
-    files: List[UploadFile] = File(...)
-    file_id: str
-    db_id: str
+# class UploadRequest(BaseModel):
+#     files: List[UploadFile] = File(...)
+#     file_id: str
+#     db_id: str
 
 @app.post("/upload")
-async def upload_files(request: UploadRequest):
+# async def upload_files(request: UploadRequest):
+async def upload_files(
+    files: List[UploadFile] = File(...),
+    file_id: str = Form(...),
+    db_id: str = Form(...),
+    ):
     db = chromadb.PersistentClient(path="./chroma_db")
 
     collection_params = {
@@ -53,11 +58,7 @@ async def upload_files(request: UploadRequest):
     try:
         chroma_collection = db.get_collection(**collection_params)
     except Exception:
-        collection_params["metadata"] = {
-            "hnsw:space": DISTANCE_METRIC,
-            "file_id": request.file_id,
-            "db_id": request.db_id
-            }
+        collection_params["metadata"] = {"hnsw:space": DISTANCE_METRIC}
         chroma_collection = db.create_collection(**collection_params)
     
     sentence_splitter = SentenceSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
@@ -66,7 +67,7 @@ async def upload_files(request: UploadRequest):
     metadatas = []
     ids = []
 
-    for uploaded_file in request.files:
+    for uploaded_file in files:
         file_content = await uploaded_file.read()
         file_extension = uploaded_file.filename.split('.')[-1].lower()
         
@@ -85,9 +86,11 @@ async def upload_files(request: UploadRequest):
         for chunk_id, chunk in enumerate(chunks):
             documents.append(chunk)
             metadatas.append({
-                "file_name": uploaded_file.filename
+                "file_name": uploaded_file.filename,
+                "file_id": file_id,
+                "db_id": db_id
             })
-            ids.append(f"{uploaded_file.filename}_{chunk_id}")
+            ids.append(f"{db_id}_{file_id}")
     
     chroma_collection.add(
         documents=documents,
@@ -158,6 +161,45 @@ def chat(request: ChatRequest):
         answer=answer,
         sources=sources
     )
+
+class DeleteRequest(BaseModel):
+    db_id: str
+    file_id: str
+
+class DeleteResponse(BaseModel):
+    success: bool
+
+@app.post("/delete", response_model=DeleteResponse)
+def delete(request: DeleteRequest):
+    db = chromadb.PersistentClient(path="./chroma_db")
+
+    collection_params = {
+        "name": "chroma_collection",
+        "embedding_function": chromadb.utils.embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=EMBED_MODEL,
+            device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        )
+    }
+
+    try:
+        chroma_collection = db.get_collection(**collection_params)
+    except Exception:
+        collection_params["metadata"] = {"hnsw:space": DISTANCE_METRIC}
+        chroma_collection = db.create_collection(**collection_params)
+
+    try:
+        chroma_collection.delete(
+            ids=f"{request.db_id}_{request.file_id}"
+        )
+    except Exception:
+        return DeleteResponse(
+            success=False
+        )
+
+    return DeleteResponse(
+        success=True
+    )
+
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
