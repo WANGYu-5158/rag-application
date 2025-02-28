@@ -3,7 +3,6 @@ package com.example.ragapplication.controller;
 import com.example.ragapplication.pojo.Knowledgedb;
 import com.example.ragapplication.service.KdbService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,12 +31,7 @@ public class KdbController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addDb(@RequestParam("dbname") String dbname){
+    public int addDb(@RequestParam("dbname") String dbname){
         return kdbService.addDb(dbname);
-    }
-
-    @PostMapping("/delete")
-    public ResponseEntity<String> deleteDb(@RequestParam("dbId") int dbId){
-        return kdbService.deleteDb(dbId);
     }
 }

@@ -21,6 +21,4 @@ public interface FileMapper {
     int insertFile(FileData fileData);
 
     int deleteFileById(@Param("fileId") int fileId);
-
-    int deleteFilesByDbId(@Param("dbId") int dbId);
 }
