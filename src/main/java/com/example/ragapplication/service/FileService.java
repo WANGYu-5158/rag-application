@@ -14,5 +14,5 @@ public interface FileService {
 
     ResponseEntity<String> handleFileUpload(MultipartFile file,int dbId);
 
-    ResponseEntity<String> deleteFile(int dbId, int fileId);
+    ResponseEntity<String> deleteFile(int dbId, int fileId, String filename);
 }

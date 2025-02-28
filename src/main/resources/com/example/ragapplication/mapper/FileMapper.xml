@@ -24,4 +24,8 @@
     <delete id="deleteFileById" parameterType="int">
         DELETE FROM file WHERE id = #{fileId}
     </delete>
+
+    <delete id="deleteFilesByDbId" parameterType="int">
+        DELETE FROM file WHERE db_id = #{dbId}
+    </delete>
 </mapper>

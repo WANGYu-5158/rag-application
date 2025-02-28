@@ -45,4 +45,18 @@ public interface KnowledgedbMapper {
      * @return
      */
     int reduceDbFileNum(int dbId);
+
+    /**
+     * 根据知识库名查找是否已经存在该名称知识库
+     * @param dbname 知识库名
+     * @return true/false
+     */
+    boolean existsByName(String dbname);
+
+    /**
+     * 根据知识库id删除知识库
+     * @param dbId 知识库id
+     * @return int
+     */
+    int deleteDbById(int dbId);
 }
