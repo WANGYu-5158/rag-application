@@ -8,6 +8,7 @@
 
 package com.example.ragapplication.controller;
 
+import com.example.ragapplication.pojo.SignInResp;
 import com.example.ragapplication.pojo.SignInVo;
 import com.example.ragapplication.pojo.Userdb;
 import com.example.ragapplication.pojo.UserdbVo;
@@ -24,15 +25,20 @@ public class SignInController {
     @Autowired
     SignInService signInService;
 
-    @GetMapping("/sign-in")
-    public Userdb signInController(@RequestBody SignInVo signInVo){
-        Userdb userdb = new Userdb();
-        userdb.setUserId(null);
-        userdb.setEmail(signInVo.getEmail());
-        userdb.setPassword(signInVo.getPassword());
-        userdb.setFirstName(null);
-        userdb.setLastName(null);
-        return signInService.signIn(userdb);
+//    @GetMapping("/sign-in")
+//    public Userdb signInController(@RequestBody SignInVo signInVo){
+//        Userdb userdb = new Userdb();
+//        userdb.setUserId(null);
+//        userdb.setEmail(signInVo.getEmail());
+//        userdb.setPassword(signInVo.getPassword());
+//        userdb.setFirstName(null);
+//        userdb.setLastName(null);
+//        return signInService.signIn(userdb);
+//    }
+
+    @PostMapping("/sign-in")
+    public SignInResp signInController(@RequestBody SignInVo signInVo){
+        return signInService.signIn(signInVo);
     }
 
 }

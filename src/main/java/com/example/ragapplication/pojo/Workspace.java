@@ -20,7 +20,8 @@ import java.util.Date;
 @AllArgsConstructor
 
 public class Workspace {
-    private Integer id;
+    private Long id;
+    private Long userId;
     private String name;
     private Date createTime;
     private Date updateTime;

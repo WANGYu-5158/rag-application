@@ -5,13 +5,19 @@ package com.example.ragapplication.config;
  * @date 2024/10/29 02:28
  */
 
+import com.example.ragapplication.interceptor.MemberInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig implements WebMvcConfigurer {
+    @Autowired
+    private MemberInterceptor memberInterceptor;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -20,6 +26,12 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedHeaders("*") // 允许的请求头
                 .allowCredentials(true) // 允许携带凭证
                 .maxAge(3600); // 预检请求的最大有效期（单位：秒）
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(memberInterceptor)
+                .addPathPatterns("/workspace/**"); // 设置拦截的路径模式
     }
 }
 

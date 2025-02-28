@@ -8,6 +8,7 @@
 
 package com.example.ragapplication.mapper;
 
+import com.example.ragapplication.pojo.SignInVo;
 import com.example.ragapplication.pojo.Userdb;
 import com.example.ragapplication.pojo.UserdbVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -15,7 +16,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface UserMapper {
     Integer insertUser(Userdb user);
-    Integer findUserByEmail(Userdb userdb);
+//    Integer findUserByEmail(Userdb userdb);
+    Userdb findUserByEmail(String email);
     Userdb findUserByEmailAndPassword(Userdb userdb);
 
 }

@@ -5,6 +5,9 @@ import com.example.ragapplication.pojo.UpdateWorkspaceDTO;
 import com.example.ragapplication.pojo.Workspace;
 import com.example.ragapplication.pojo.WorkspaceDTO;
 import com.example.ragapplication.service.WorkspaceService;
+import com.example.ragapplication.utils.LoginUserContext;
+import com.example.ragapplication.utils.SnowUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -24,19 +27,25 @@ import java.util.List;
  */
 @Service
 @Transactional
+@Slf4j
 public class WorkspaceImpl implements WorkspaceService {
     @Autowired
     private WorkspaceMapper workspaceMapper;
 
     @Override
     public List<Workspace> showAll() {
-        return workspaceMapper.showAll();
+        Long userId = LoginUserContext.getId();
+        log.info("userId:" + userId);
+        return workspaceMapper.showAll(userId);
     }
 
     @Override
     public void addWorkspace(WorkspaceDTO dto) {
         if(dto != null) {
+            Long userId = LoginUserContext.getId();
             Workspace workspace = new Workspace();
+            workspace.setId(SnowUtil.getSnowflakeNextId());
+            workspace.setUserId(userId);
             workspace.setName(dto.getName());
             workspace.setSelectedDatabase(dto.getSelectedDatabase());
             workspace.setCreateTime(new Date());
@@ -59,7 +68,9 @@ public class WorkspaceImpl implements WorkspaceService {
             Workspace dbWorkspace = workspaceMapper.selectById(id);
             if(dbWorkspace != null) {
                 Workspace workspace = new Workspace();
-                workspace.setId(id);
+                Long userId = LoginUserContext.getId();
+                workspace.setId(SnowUtil.getSnowflakeNextId());
+                workspace.setUserId(userId);
                 workspace.setName(dto.getName());
                 workspace.setSelectedDatabase(dto.getSelectedDatabase());
                 workspace.setCreateTime(dbWorkspace.getCreateTime());

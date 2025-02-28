@@ -8,11 +8,12 @@
 
 package com.example.ragapplication.service;
 
+import com.example.ragapplication.pojo.SignupDTO;
 import com.example.ragapplication.pojo.Userdb;
 import com.example.ragapplication.pojo.UserdbVo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public interface SignUpService {
-    Integer signUp(Userdb user);
+    Long signUp(SignupDTO signupDTO);
 
 }

@@ -8,8 +8,7 @@
 
 package com.example.ragapplication.controller;
 
-import com.example.ragapplication.pojo.Userdb;
-import com.example.ragapplication.pojo.UserdbVo;
+import com.example.ragapplication.pojo.*;
 import com.example.ragapplication.service.SignUpService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +20,18 @@ public class SignupController {
     @Autowired
     private SignUpService signUpService;
 
-    @GetMapping("/sign-up")
-    public Integer signUp(@RequestBody UserdbVo userdbVo) {
-        Userdb userdb = new Userdb();
-        userdb.setUserId(null);
-        userdb.setPassword(userdbVo.getPassword());
-        userdb.setEmail(userdbVo.getEmail());
-        userdb.setFirstName(userdbVo.getFirstName());
-        userdb.setLastName(userdbVo.getLastName());
-        return signUpService.signUp(userdb);
+//    @GetMapping("/sign-up")
+//    public Integer signUp(@RequestBody UserdbVo userdbVo) {
+//        Userdb userdb = new Userdb();
+//        userdb.setUserId(null);
+//        userdb.setPassword(userdbVo.getPassword());
+//        userdb.setEmail(userdbVo.getEmail());
+//        userdb.setFirstName(userdbVo.getFirstName());
+//        userdb.setLastName(userdbVo.getLastName());
+//        return signUpService.signUp(userdb);
+//    }
+    @PostMapping("/sign-up")
+    public Long signInController(@RequestBody SignupDTO signupDTO){
+        return signUpService.signUp(signupDTO);
     }
 }

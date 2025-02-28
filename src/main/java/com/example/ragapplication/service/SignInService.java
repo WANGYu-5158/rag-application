@@ -8,8 +8,10 @@
 
 package com.example.ragapplication.service;
 
+import com.example.ragapplication.pojo.SignInResp;
+import com.example.ragapplication.pojo.SignInVo;
 import com.example.ragapplication.pojo.Userdb;
 
 public interface SignInService {
-    Userdb signIn(Userdb userdb);
+    SignInResp signIn(SignInVo signInVo);
 }

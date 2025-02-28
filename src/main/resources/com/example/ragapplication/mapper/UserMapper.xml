@@ -13,10 +13,13 @@
 
 <mapper namespace="com.example.ragapplication.mapper.UserMapper">
     <insert id="insertUser">
-        insert into user(userid, email, password, firstname, lastname) values (null,#{email},#{password},#{firstName},#{lastName});
+        insert into user(userId, email, password, firstName, lastName) values (null,#{email},#{password},#{firstName},#{lastName});
     </insert>
-    <select id="findUserByEmail" resultType="java.lang.Integer">
-        select userid from user where email = #{email};
+<!--    <select id="findUserByEmail" resultType="java.lang.Integer">-->
+<!--        select userid from user where email = #{email};-->
+<!--    </select>-->
+    <select id="findUserByEmail" resultType="com.example.ragapplication.pojo.Userdb">
+        select * from user where email = #{email};
     </select>
     <select id="findUserByEmailAndPassword" resultType="com.example.ragapplication.pojo.Userdb">
         select * from user where email = #{email} and password = #{password};

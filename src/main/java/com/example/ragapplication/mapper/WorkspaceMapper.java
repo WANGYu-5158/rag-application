@@ -19,7 +19,7 @@ import java.util.List;
 @Component
 public interface WorkspaceMapper {
 
-    List<Workspace> showAll();
+    List<Workspace> showAll(Long userId);
 
     void save(Workspace workspace);
 
