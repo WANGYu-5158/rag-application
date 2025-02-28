@@ -18,7 +18,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wangyu
@@ -31,6 +33,8 @@ public class FileServiceImpl implements FileService {
     private FileMapper fileMapper; // 注入 MyBatis Mapper
     @Autowired
     private KnowledgedbMapper knowledgedbMapper;
+    @Autowired
+    private MinioService minioService;
 
     @Override
     public Page<FileData> getFilesById(String id, int page, int size) {
@@ -50,12 +54,11 @@ public class FileServiceImpl implements FileService {
             //byte[] fileContent = file.getBytes(); // 文件内容以字节数组形式获取
             fileData.setFilename(fileName);
             fileData.setDbId(dbId);
+
             //在file数据库中增加文件记录，并在fileData获取id
             fileMapper.insertFile(fileData);
             //更新file数据表之后在knowledgedb数据库中增加文件数量，并更新数据库的更新时间
             knowledgedbMapper.addDbFileNum(dbId);
-            //验证是否获取到了文件的id
-            //System.out.println("Received file: " + fileName + " with ID: " + fileData.getId());
 
             // 创建 RestTemplate 实例
             RestTemplate restTemplate = new RestTemplate();
@@ -71,8 +74,8 @@ public class FileServiceImpl implements FileService {
                 }
             });
             // 在body中增加fileid和dbid以便后续查找以及删除文件(需要修改 rag api)
-            //body.add("file_id", fileData.getId());
-            //body.add("db_id", dbId);
+            body.add("file_id", fileData.getId());
+            body.add("db_id", dbId);
 
             // 设置请求头
             HttpHeaders headers = new HttpHeaders();
@@ -84,6 +87,9 @@ public class FileServiceImpl implements FileService {
             // 发送 POST 请求
             ResponseEntity<String> response = restTemplate.postForEntity(targetUrl, requestEntity, String.class);
 
+            // 将文件上传到 MinIO
+            String uploadedFileName = minioService.uploadFile(file);  // 使用之前配置的 MinIO 服务类
+
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Failed to process the file：" + e.getMessage());
         }
@@ -92,12 +98,35 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public ResponseEntity<String> deleteFile(int dbId, int fileId) {
+    public ResponseEntity<String> deleteFile(int dbId, int fileId, String filename) {
         try {
+            // 创建 RestTemplate 实例
+            RestTemplate restTemplate = new RestTemplate();
+            String targetUrl = "http://localhost:8000/delete";
+
+            // 创建请求体
+            Map<String, Object> body = new HashMap<>();
+            body.put("db_id", String.valueOf(dbId));  // 将 dbId 转换为字符串
+            body.put("file_id", String.valueOf(fileId));  // 将 fileId 转换为字符
+
+            // 设置请求头
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON); // 使用json提交
+
+            // 创建请求实体
+            // HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // 发送 POST 请求
+            ResponseEntity<String> response = restTemplate.postForEntity(targetUrl, requestEntity, String.class);
+
+            // 在MinIO中删除文件
+            minioService.deleteFile(filename);
             // 调用 Mapper 方法删除文件
             fileMapper.deleteFileById(fileId);
             // 更新knowledgedb数据库中的file_num信息，并更新数据库的更新时间
             knowledgedbMapper.reduceDbFileNum(dbId);
+
             return ResponseEntity.ok("File deleted successfully！");
         } catch (Exception e) {
             e.printStackTrace();
