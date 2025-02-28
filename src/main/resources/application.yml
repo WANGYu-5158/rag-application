@@ -39,4 +39,11 @@ mybatis:
     # 开启驼峰映射
     map-underscore-to-camel-case: true
 
+minio:
+  endpoint: "http://localhost:9000"
+  access-key: "admin"
+  secret-key: "admin123"
+  bucket-name: "lucky"
+
+
 
