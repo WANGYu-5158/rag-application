@@ -23,4 +23,6 @@ public interface FileMapper {
     int deleteFileById(@Param("fileId") int fileId);
 
     int deleteFilesByDbId(@Param("dbId") int dbId);
+
+    void insertBatchFiles(@Param("list") List<FileData> fileList);
 }

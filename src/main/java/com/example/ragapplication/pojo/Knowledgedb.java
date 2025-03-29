@@ -17,6 +17,7 @@ import java.util.Date;
 public class Knowledgedb {
 
     private Integer id;
+    private Long userId;
     private String name;
     private Date createTime;
     private Date updateTime;

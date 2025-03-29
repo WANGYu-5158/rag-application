@@ -8,18 +8,18 @@
         DELETE FROM knowledgedb WHERE id = #{dbId};
     </delete>
 
-    <select id="queryAll" resultType="com.example.ragapplication.pojo.Knowledgedb">
-        SELECT * FROM knowledgedb;
+    <select id="queryAllByUserId" resultType="com.example.ragapplication.pojo.Knowledgedb">
+        SELECT * FROM knowledgedb WHERE user_id = #{userId};
     </select>
 
     <select id="queryByName" resultType="com.example.ragapplication.pojo.Knowledgedb">
         SELECT * FROM knowledgedb
-        WHERE name LIKE CONCAT('%', #{dbname}, '%');
+        WHERE user_id = #{userId} and name LIKE CONCAT('%', #{dbname}, '%');
     </select>
 
     <insert id="addDb">
-        INSERT INTO knowledgedb (name, create_time, update_time, file_num)
-        VALUES (#{dbname}, NOW(), NOW(), 0);
+        INSERT INTO knowledgedb (name, user_id,create_time, update_time, file_num)
+        VALUES (#{dbname}, #{userId}, NOW(), NOW(), 0);
     </insert>
 
     <update id="addDbFileNum" parameterType="int">
@@ -35,6 +35,12 @@
     </update>
 
     <select id="existsByName" resultType="boolean">
-        SELECT EXISTS(SELECT 1 FROM knowledgedb WHERE name = #{dbname});
+        SELECT EXISTS(SELECT 1 FROM knowledgedb WHERE user_id = #{userId} and name = #{dbname});
     </select>
+
+    <update id="addDbMultiFileNum" parameterType="int">
+        UPDATE knowledgedb
+        SET file_num = file_num + #{fileNum}, update_time = NOW()
+        WHERE id = #{dbId};
+    </update>
 </mapper>

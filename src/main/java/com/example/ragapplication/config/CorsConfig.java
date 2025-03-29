@@ -31,7 +31,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(memberInterceptor)
-                .addPathPatterns("/workspace/**"); // 设置拦截的路径模式
+                .addPathPatterns("/**"); // 设置拦截的路径模式
     }
 }
 

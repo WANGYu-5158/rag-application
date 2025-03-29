@@ -28,4 +28,14 @@
     <delete id="deleteFilesByDbId" parameterType="int">
         DELETE FROM file WHERE db_id = #{dbId}
     </delete>
+
+    <insert id="insertBatchFiles" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO file (db_id, filename, upload_time)
+        VALUES
+        <foreach collection="list" item="fileData" separator=",">
+            (#{fileData.dbId}, #{fileData.filename}, NOW())
+        </foreach>
+    </insert>
+
+
 </mapper>

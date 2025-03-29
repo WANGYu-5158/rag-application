@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * @author wangyu
@@ -76,5 +77,12 @@ public class FileController {
             throw new RuntimeException("Error: " + e.getMessage(), e);
         }
     }
+
+    @PostMapping("/uploadMultiple")
+    public ResponseEntity<List<String>> uploadMultipleFiles (@RequestParam("files") List<MultipartFile> files,
+                                                            @RequestParam("dbId") int dbId) {
+        return fileService.uploadMultipleFiles(files, dbId);
+    }
+
 }
 

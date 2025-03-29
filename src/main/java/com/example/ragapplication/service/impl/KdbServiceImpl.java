@@ -4,6 +4,7 @@ import com.example.ragapplication.mapper.FileMapper;
 import com.example.ragapplication.mapper.KnowledgedbMapper;
 import com.example.ragapplication.pojo.Knowledgedb;
 import com.example.ragapplication.service.KdbService;
+import com.example.ragapplication.utils.LoginUserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,28 +26,31 @@ public class KdbServiceImpl implements KdbService {
 
     @Override
     public List<Knowledgedb> kdbList() {
-        return knowledgedbMapper.queryAll();
+        Long userId = LoginUserContext.getId();
+        return knowledgedbMapper.queryAllByUserId(userId);
     }
 
     @Override
     public List<Knowledgedb> queryByName(String dbname) {
-        return knowledgedbMapper.queryByName(dbname);
+        Long userId = LoginUserContext.getId();
+        return knowledgedbMapper.queryByName(dbname, userId);
     }
 
     @Override
     public ResponseEntity<String> addDb(String dbname) {
+        Long userId = LoginUserContext.getId();
         // 空值检查
         if (dbname == null || dbname.trim().isEmpty()) {
             return new ResponseEntity<>("Knowledge base name cannot be empty", HttpStatus.BAD_REQUEST);
         }
 
         // 唯一性检查：查询是否已存在该数据库名称
-        if (knowledgedbMapper.existsByName(dbname)) {
+        if (knowledgedbMapper.existsByName(dbname, userId)) {
             return new ResponseEntity<>("The Knowledge base name already exists", HttpStatus.BAD_REQUEST);
         }
 
         // 如果通过了所有检查，则调用Mapper添加数据库
-        int result = knowledgedbMapper.addDb(dbname);
+        int result = knowledgedbMapper.addDb(dbname, userId);
 
         // 检查数据库是否添加成功
         if (result > 0) {

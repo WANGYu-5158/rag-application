@@ -16,24 +16,24 @@ public interface KnowledgedbMapper {
      * 查询全部数据库信息
      * @return
      */
-    List<Knowledgedb> queryAll();
+    List<Knowledgedb> queryAllByUserId(Long userId);
 
     /**
      * 根据数据库名模糊查询数据库信息
      * @param dbname
      * @return
      */
-    List<Knowledgedb> queryByName(String dbname);
+    List<Knowledgedb> queryByName(String dbname, Long userId);
 
     /**
      * 新增数据库信息
      * @param dbname
      * @return
      */
-    int addDb(String dbname);
+    int addDb(String dbname, Long userId);
 
     /**
-     * 更新数据库文件数量信息并更新知识库更新时间
+     * 更新数据库文件数量信息并更新知识库更新时间(单个文件)
      * @param dbId
      * @return
      */
@@ -51,7 +51,7 @@ public interface KnowledgedbMapper {
      * @param dbname 知识库名
      * @return true/false
      */
-    boolean existsByName(String dbname);
+    boolean existsByName(String dbname, Long userId);
 
     /**
      * 根据知识库id删除知识库
@@ -59,4 +59,11 @@ public interface KnowledgedbMapper {
      * @return int
      */
     int deleteDbById(int dbId);
+
+    /**
+     * 更新数据库文件数量信息并更新知识库更新时间(批量增加文件)
+     * @param dbId
+     * @return
+     */
+    int addDbMultiFileNum(int dbId, int fileNum);
 }
