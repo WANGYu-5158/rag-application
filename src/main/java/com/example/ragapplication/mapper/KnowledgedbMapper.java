@@ -66,4 +66,12 @@ public interface KnowledgedbMapper {
      * @return
      */
     int addDbMultiFileNum(int dbId, int fileNum);
+
+    /**
+     * 减少数据库中文件数量信息并更新知识库更新时间(批量减少文件)
+     * @param dbId
+     * @param fileNum
+     * @return
+     */
+    int reduceDbMultiFileNum(int dbId, int fileNum);
 }

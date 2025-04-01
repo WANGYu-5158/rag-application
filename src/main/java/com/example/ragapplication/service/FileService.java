@@ -20,4 +20,6 @@ public interface FileService {
     ResponseEntity<String> deleteFile(int dbId, int fileId, String filename);
 
     ResponseEntity<List<String>> uploadMultipleFiles(List<MultipartFile> files, int dbId);
+
+    ResponseEntity<String> deleteBatchFiles(List<Integer> ids, Integer dbId, List<String> filenames);
 }

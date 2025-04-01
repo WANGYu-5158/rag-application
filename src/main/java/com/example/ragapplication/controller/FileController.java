@@ -1,11 +1,13 @@
 package com.example.ragapplication.controller;
 
+import com.example.ragapplication.pojo.DeleteBatchRequest;
 import com.example.ragapplication.pojo.FileData;
 import com.example.ragapplication.pojo.Page;
 import com.example.ragapplication.service.FileService;
 import com.example.ragapplication.service.impl.MinioService;
 import io.minio.errors.MinioException;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,11 +18,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wangyu
  * @date 2024/11/4 21:10
  */
+@Slf4j
 @RestController
 @RequestMapping("/file")
 public class FileController {
@@ -40,6 +44,7 @@ public class FileController {
         return ResponseEntity.ok(filePage);
     }
 
+    // 目前暂时停用单个文件上传接口
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,
                                              @RequestParam("dbId") int dbId) {
@@ -82,6 +87,16 @@ public class FileController {
     public ResponseEntity<List<String>> uploadMultipleFiles (@RequestParam("files") List<MultipartFile> files,
                                                             @RequestParam("dbId") int dbId) {
         return fileService.uploadMultipleFiles(files, dbId);
+    }
+
+    @PostMapping("/deleteBatch")
+    public ResponseEntity<String> deleteBatchFiles(@RequestBody DeleteBatchRequest request) {
+        log.info("Received batch delete request: fileIds={}, dbId={}, filenames={}",
+                request.getIds(), request.getDbId(), request.getFilenames());
+        List<Integer> fileIds = request.getIds();
+        Integer dbId = request.getDbId();
+        List<String> filenames = request.getFilenames();
+        return fileService.deleteBatchFiles(fileIds, dbId,filenames);
     }
 
 }

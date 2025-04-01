@@ -113,10 +113,8 @@ public class FileServiceImpl implements FileService {
             // 设置请求头
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON); // 使用json提交
-
             // 创建请求实体
             HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
             // 发送 POST 请求
             ResponseEntity<String> response = restTemplate.postForEntity(targetUrl, requestEntity, String.class);
 
@@ -214,5 +212,42 @@ public class FileServiceImpl implements FileService {
 
         //这里把文件名返回回去，但其实前端并没有使用，后续看是否需要使用
         return ResponseEntity.ok(responseMessages);
+    }
+
+    @Override
+    public ResponseEntity<String> deleteBatchFiles(List<Integer> fileIds, Integer dbId, List<String> filenames) {
+        try {
+            if (fileIds.isEmpty() || filenames.isEmpty()) {
+                return ResponseEntity.badRequest().body("File list is empty");
+            }
+            // 在RAG系统中删除文件
+            RestTemplate restTemplate = new RestTemplate();
+            String targetUrl = "http://localhost:8000/delete";
+            for (int i = 0; i < fileIds.size(); i++) {
+                // 创建请求体
+                Map<String, Object> body = new HashMap<>();
+                body.put("db_id", String.valueOf(dbId));  // 将 dbId 转换为字符串
+                body.put("file_id", String.valueOf(fileIds.get(i)));  // 将 fileId 转换为字符
+
+                // 设置请求头
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON); // 使用json提交
+                HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+                ResponseEntity<String> response = restTemplate.postForEntity(targetUrl, requestEntity, String.class);
+            }
+            // 在MinIO中并行删除文件
+            List<CompletableFuture<Void>> futures = filenames.stream()
+                    .map(filename -> CompletableFuture.runAsync(() -> minioService.deleteFile(filename)))
+                    .collect(Collectors.toList());
+            // 等待所有MinIO删除任务完成
+            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+            // 批量删除数据库中的记录,调整知识库信息(数量和更新时间)
+            fileMapper.deleteFilesByIds(fileIds, dbId);
+            knowledgedbMapper.reduceDbMultiFileNum(dbId, fileIds.size());
+            return ResponseEntity.ok("Batch deletion successful");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Batch deletion failed: " + e.getMessage());
+        }
     }
 }

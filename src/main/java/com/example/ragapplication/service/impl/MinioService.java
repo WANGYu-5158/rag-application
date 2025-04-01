@@ -89,37 +89,4 @@ public class MinioService {
             throw new RuntimeException("Error deleting file from MinIO: " + e.getMessage(), e);
         }
     }
-
-    //批量上传到MinIO
-    public List<String> uploadMultipleFiles(List<MultipartFile> files) {
-        List<String> fileUrls = new ArrayList<>();
-        try {
-            log.info("Starting batch upload. Total files: {}", files.size());
-            for (MultipartFile file : files) {
-                // String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-                String fileName = file.getOriginalFilename();
-                log.info("Uploading file: {}", fileName);
-                InputStream inputStream = file.getInputStream();
-
-                // 上传到 MinIO
-                minioClient.putObject(PutObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object(fileName)
-                        .stream(inputStream, file.getSize(), -1)
-                        .contentType(file.getContentType())
-                        .build());
-
-                fileUrls.add(fileName);
-                log.info("Successfully uploaded file: {}", fileName);
-            }
-            log.info("Batch upload completed. Uploaded files: {}", fileUrls.size());
-        } catch (MinioException e) {
-            log.error("MinIO 上传文件失败：{}", e.getMessage(), e);
-            throw new RuntimeException("MinIO 上传文件失败：" + e.getMessage());
-        } catch (Exception e) {
-            log.error("MinIO 上传文件失败：{}", e.getMessage(), e);
-            throw new RuntimeException("文件上传失败：" + e.getMessage());
-        }
-        return fileUrls;
-    }
 }

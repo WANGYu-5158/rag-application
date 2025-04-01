@@ -43,4 +43,10 @@
         SET file_num = file_num + #{fileNum}, update_time = NOW()
         WHERE id = #{dbId};
     </update>
+
+    <update id="reduceDbMultiFileNum" parameterType="int">
+        UPDATE knowledgedb
+        SET file_num = file_num - #{fileNum}, update_time = NOW()
+        WHERE id = #{dbId};
+    </update>
 </mapper>
